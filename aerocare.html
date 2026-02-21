@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kathmandu AQI Dashboard</title>
+  <link rel="stylesheet" type="text/css" href="css/aerocare.css" />
+</head>
+
+<body>
+  <!-- Page Transition Overlay -->
+  <div id="page-transition"></div>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <h1>Kathmandu Air Quality</h1>
+    <span class="subtitle">Live AQI Monitoring</span>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container fade-in">
+    <section class="summary">
+      <h2>City Overview</h2>
+      <p id="summary-text">Loading air quality data...</p>
+    </section>
+
+    <section class="cards" id="aqi-cards">
+      <!-- AQI cards injected here -->
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>Data provided by Kathmandu AQI API • Live 24/7</p>
+  </footer>
+
+  <script src="js/aerocare.js"></script>
+</body>
+</html>
