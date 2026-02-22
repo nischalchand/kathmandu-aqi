@@ -2,38 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kathmandu AQI Dashboard</title>
-  <link rel="stylesheet" type="text/css" href="css/aerocare.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
 </head>
-
 <body>
-  <!-- Page Transition Overlay -->
-  <div id="page-transition"></div>
+  <div class="app">
+    <header>
+      <nav class="navbar">
+        <div class="logo">AeroCare</div>
+        <div class="nav-links" id="navLinks">
+          <!-- JS will inject buttons here -->
+        </div>
+      </nav>
+      <h1>Kathmandu Air Quality</h1>
+      <p>Live AQI & Health Advisory</p>
+    </header>
 
-  <!-- Navbar -->
-  <header class="navbar">
-    <h1>Kathmandu Air Quality</h1>
-    <span class="subtitle">Live AQI Monitoring</span>
-  </header>
-
-  <!-- Main Content -->
-  <main class="container fade-in">
-    <section class="summary">
-      <h2>City Overview</h2>
-      <p id="summary-text">Loading air quality data...</p>
+    <!-- Station Selector -->
+    <section class="controls">
+      <select id="stationSelect">
+        <option>Loading stations…</option>
+      </select>
     </section>
 
-    <section class="cards" id="aqi-cards">
-      <!-- AQI cards injected here -->
+    <!-- AQI Card -->
+    <section id="aqiCard" class="aqi-card hidden">
+      <h2 id="stationName"></h2>
+
+      <div class="aqi-value" id="aqiValue"></div>
+      <div class="aqi-category" id="aqiCategory"></div>
+
+      <div class="pm">
+        PM2.5: <span id="pm25"></span> µg/m³
+      </div>
+
+      <div class="health">
+        <h3>Health Advice</h3>
+        <p id="healthEn"></p>
+        <p class="ne" id="healthNe"></p>
+      </div>
+
+      <div class="updated">
+        Last updated: <span id="lastUpdated"></span>
+      </div>
     </section>
-  </main>
 
-  <!-- Footer -->
-  <footer>
-    <p>Data provided by Kathmandu AQI API • Live 24/7</p>
-  </footer>
+    <!-- History -->
+    <section id="history" class="history hidden">
+      <h3>Last 48 Readings</h3>
+      <ul id="historyList" class="list"></ul>
+    </section>
 
+    <footer>
+      Data refreshes every 30 minutes
+    </footer>
+  </div>
   <script src="js/aerocare.js"></script>
 </body>
 </html>
