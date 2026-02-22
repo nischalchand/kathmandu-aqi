@@ -1,82 +1,152 @@
-const API_URL =
-  "https://kathmandu-aqi-production.up.railway.app/api/aqi/kathmandu";
+const navLinks = document.getElementById("navLinks");
+const user = JSON.parse(localStorage.getItem("user"));
 
-const cardsContainer = document.getElementById("aqi-cards");
-const summaryText = document.getElementById("summary-text");
-
-function getAQIClass(aqi) {
-  if (aqi <= 50) return "good";
-  if (aqi <= 100) return "moderate";
-  if (aqi <= 150) return "unhealthy";
-  return "very-unhealthy";
+function renderNav() {
+  if (!user) {
+    navLinks.innerHTML = `
+      <a href="access.html" class="nav-link">Login</a>
+    `;
+  } else {
+    // FIX: Check for direct role OR nested role just in case backend wraps user data
+    const role = user.role || (user.user && user.user.role);
+    
+    if (role === "ADMIN") {
+      navLinks.innerHTML = `
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="admin.html" class="nav-link">Admin</a>
+        <button onclick="logout()">Logout</button>
+      `;
+    } else {
+      navLinks.innerHTML = `
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <button onclick="logout()">Logout</button>
+      `;
+    }
+  }
 }
 
-fetch(API_URL)
-  .then(res => res.json())
-  .then(data => {
-    console.log("RAW API DATA:", data); // keep this
+function logout() {
+  localStorage.clear();
+  window.location.href = "access.html";
+}
 
-    cardsContainer.innerHTML = "";
+renderNav();
 
-    if (!Array.isArray(data) || data.length === 0) {
-      summaryText.textContent = "No AQI stations available.";
-      return;
-    }
+const BASE = "https://kathmandu-aqi-production-ec2c.up.railway.app/api/aqi";
 
-    let unhealthyCount = 0;
+const stationSelect = document.getElementById("stationSelect");
+const card = document.getElementById("aqiCard");
+const historySection = document.getElementById("history");
 
-    data.forEach(item => {
-      // SAFE FIELD MAPPING
-      const stationName =
-        item.station ||
-        item.station_name ||
-        item.name ||
-        "AQI Station";
+const stationNameEl = document.getElementById("stationName");
+const aqiValueEl = document.getElementById("aqiValue");
+const aqiCategoryEl = document.getElementById("aqiCategory");
+const pm25El = document.getElementById("pm25");
+const healthEnEl = document.getElementById("healthEn");
+const healthNeEl = document.getElementById("healthNe");
+const lastUpdatedEl = document.getElementById("lastUpdated");
+const historyList = document.getElementById("historyList");
 
-      const pm25 =
-        item.pm25 ??
-        item.pm_2_5 ??
-        item.pm25_value ??
-        "N/A";
+const AQI_COLORS = [
+  { max: 50, color: "#00E400" },
+  { max: 100, color: "#FFFF00" },
+  { max: 150, color: "#FF7E00" },
+  { max: 200, color: "#FF0000" },
+  { max: 300, color: "#8F3F97" },
+  { max: 500, color: "#7E0023" }
+];
 
-      const aqi =
-        item.aqi ??
-        item.aqi_index ??
-        item.index ??
-        "N/A";
+function getAqiColor(aqi) {
+  return AQI_COLORS.find(r => aqi <= r.max)?.color || "#7E0023";
+}
 
-      const category =
-        item.category ||
-        item.level ||
-        "Unhealthy";
+async function loadStations() {
+  try {
+    const res = await fetch(`${BASE}/kathmandu`);
+    if (!res.ok) throw new Error("Network response failed");
+    const data = await res.json();
 
-      const aqiClass =
-        typeof aqi === "number" ? getAQIClass(aqi) : "unhealthy";
-
-      if (aqiClass !== "good") unhealthyCount++;
-
-      const card = document.createElement("div");
-      card.className = "card";
-
-      card.innerHTML = `
-        <h3>${stationName}</h3>
-        <p><strong>PM2.5:</strong> ${pm25}</p>
-        <p><strong>AQI:</strong> ${aqi}</p>
-        <span class="badge ${aqiClass}">
-          ${category}
-        </span>
-      `;
-
-      cardsContainer.appendChild(card);
+    stationSelect.innerHTML = "";
+    data.forEach((s, i) => {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = s.stationName;
+      stationSelect.appendChild(opt);
     });
 
-    summaryText.textContent =
-      unhealthyCount > data.length / 2
-        ? "Air quality is mostly unhealthy today. Limit outdoor exposure."
-        : "Air quality is relatively stable today.";
-  })
-  .catch(err => {
-    console.error("FETCH ERROR:", err);
-    summaryText.textContent =
-      "Failed to load AQI data. Please try again later.";
-  });
+    if(data.length > 0) {
+      showStation(data[0], data);
+    } else {
+      stationSelect.innerHTML = "<option>No stations available</option>";
+    }
+  } catch (error) {
+    stationSelect.innerHTML = "<option>Failed to load data</option>";
+    console.error("Error loading stations:", error);
+  }
+}
+
+function showStation(station, allStations) {
+  card.classList.remove("hidden");
+  
+  stationNameEl.textContent = station.stationName;
+  aqiValueEl.textContent = station.aqi;
+  aqiCategoryEl.textContent = station.category;
+  
+  // FIX: Round PM2.5 to 2 decimal places to prevent long text overflow
+  pm25El.textContent = station.pm25 ? Number(station.pm25).toFixed(2) : "N/A";
+  
+  healthEnEl.textContent = station.healthAdviceEn;
+  healthNeEl.textContent = station.healthAdviceNe;
+  lastUpdatedEl.textContent = station.lastUpdated ? new Date(station.lastUpdated).toLocaleString() : "Unknown Date";
+
+  const color = getAqiColor(station.aqi);
+  card.style.background = color;
+  card.style.color = station.aqi <= 100 ? "#000" : "#fff";
+
+  loadHistory(station.stationName);
+}
+
+async function loadHistory(stationName) {
+  historySection.classList.remove("hidden");
+  historyList.innerHTML = "<li>Loading…</li>";
+
+  try {
+    const res = await fetch(`${BASE}/kathmandu/history?station=${encodeURIComponent(stationName)}`);
+    if (!res.ok) throw new Error("Failed to load history");
+    const data = await res.json();
+
+    historyList.innerHTML = "";
+    if (data.length === 0) {
+       historyList.innerHTML = "<li>No history available</li>";
+       return;
+    }
+
+    data.forEach(h => {
+      const li = document.createElement("li");
+      
+      // FIX: Check multiple possible names your backend might use for the date
+      const dateValue = h.timestamp || h.lastUpdated || h.createdAt || h.date;
+      
+      // FIX: Verify it's a real date before turning it into a string, fallback to "Unknown Date"
+      const isValidDate = dateValue && !isNaN(new Date(dateValue).getTime());
+      const formattedDate = isValidDate ? new Date(dateValue).toLocaleString() : "Unknown Date";
+
+      li.textContent = `${formattedDate} → AQI ${h.aqi}`;
+      historyList.appendChild(li);
+    });
+  } catch (error) {
+    historyList.innerHTML = "<li>Failed to load history</li>";
+  }
+}
+
+stationSelect.addEventListener("change", async () => {
+  try {
+    const res = await fetch(`${BASE}/kathmandu`);
+    const data = await res.json();
+    showStation(data[stationSelect.value], data);
+  } catch(err) {
+    console.error("Error changing station:", err);
+  }
+});
+
+loadStations();
