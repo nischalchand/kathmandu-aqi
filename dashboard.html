@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>User Dashboard</h1>
+      <div class="nav-links" style="justify-content: center; margin-top: 10px;">
+        <a href="aerocare.html" class="nav-link">Home</a>
+        <button onclick="logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="form-section">
+      <h2>Live AQI</h2>
+      <div id="aqi" class="aqi-list"></div>
+    </div>
+
+    <div class="form-section">
+      <h2>Log Symptom</h2>
+      <input id="symptom" placeholder="Symptom (e.g., Cough)">
+      <input id="severity" type="number" placeholder="Severity (1-10)">
+      <input id="notes" placeholder="Notes (Optional)">
+      <button onclick="logSymptom()">Submit</button>
+    </div>
+
+    <div class="form-section">
+      <h2>Log Exposure</h2>
+      <input id="exposureLocation" placeholder="Location">
+      <input id="exposureAqi" type="number" placeholder="AQI Value">
+      <input id="exposureDuration" type="number" placeholder="Duration (mins)">
+      <button onclick="logExposure()">Submit</button>
+    </div>
+
+    <div class="form-section">
+      <h2>Your Symptom History</h2>
+      <ul id="symptomList" class="list"></ul>
+    </div>
+
+    <div class="form-section">
+      <h2>Your Exposure History</h2>
+      <ul id="exposureList" class="list"></ul>
+    </div>
+  </div>
+  <script>
+    function logout() {
+      localStorage.clear();
+      window.location.href = "access.html";
+    }
+  </script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
