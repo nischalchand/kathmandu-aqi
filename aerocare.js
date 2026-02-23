@@ -7,9 +7,8 @@ function renderNav() {
       <a href="access.html" class="nav-link">Login</a>
     `;
   } else {
-    // FIX: Check for direct role OR nested role just in case backend wraps user data
     const role = user.role || (user.user && user.user.role);
-    
+
     if (role === "ADMIN") {
       navLinks.innerHTML = `
         <a href="dashboard.html" class="nav-link">Dashboard</a>
@@ -32,7 +31,7 @@ function logout() {
 
 renderNav();
 
-const BASE = "https://kathmandu-aqi-production-ec2c.up.railway.app/api/aqi";
+const BASE = "https://corsproxy.io/?https://kathmandu-aqi-production-ec2c.up.railway.app/api/aqi";
 
 const stationSelect = document.getElementById("stationSelect");
 const card = document.getElementById("aqiCard");
@@ -60,44 +59,102 @@ function getAqiColor(aqi) {
   return AQI_COLORS.find(r => aqi <= r.max)?.color || "#7E0023";
 }
 
+/* ---------------- GLOBAL STATION STORAGE ---------------- */
+let stationsData = [];
+let userLat = null;
+let userLon = null;
+
+/* ---------------- GEOLOCATION ---------------- */
+function requestLocation() {
+  if (!navigator.geolocation) return;
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userLat = pos.coords.latitude;
+      userLon = pos.coords.longitude;
+      autoSelectNearestStation();
+    },
+    () => {
+      // fallback to first station
+      if (stationsData.length > 0) showStation(stationsData[0]);
+    }
+  );
+}
+
+/* ---------------- HAVERSINE DISTANCE ---------------- */
+function distance(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+
+  const a =
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1*Math.PI/180) *
+    Math.cos(lat2*Math.PI/180) *
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+/* ---------------- AUTO NEAREST STATION ---------------- */
+function autoSelectNearestStation() {
+  if (!userLat || !userLon || stationsData.length === 0) return;
+
+  // IMPORTANT: API must send lat/lon for each station
+  let nearestIndex = 0;
+  let minDist = Infinity;
+
+  stationsData.forEach((s, i) => {
+    if (!s.lat || !s.lon) return;
+    const d = distance(userLat, userLon, s.lat, s.lon);
+    if (d < minDist) {
+      minDist = d;
+      nearestIndex = i;
+    }
+  });
+
+  stationSelect.value = nearestIndex;
+  showStation(stationsData[nearestIndex]);
+}
+
+/* ---------------- LOAD STATIONS ---------------- */
 async function loadStations() {
   try {
     const res = await fetch(`${BASE}/kathmandu`);
     if (!res.ok) throw new Error("Network response failed");
-    const data = await res.json();
+    stationsData = await res.json();
 
     stationSelect.innerHTML = "";
-    data.forEach((s, i) => {
+    stationsData.forEach((s, i) => {
       const opt = document.createElement("option");
       opt.value = i;
       opt.textContent = s.stationName;
       stationSelect.appendChild(opt);
     });
 
-    if(data.length > 0) {
-      showStation(data[0], data);
-    } else {
-      stationSelect.innerHTML = "<option>No stations available</option>";
-    }
+    requestLocation(); // ask location AFTER stations load
+
   } catch (error) {
     stationSelect.innerHTML = "<option>Failed to load data</option>";
     console.error("Error loading stations:", error);
   }
 }
 
-function showStation(station, allStations) {
+/* ---------------- SHOW STATION ---------------- */
+function showStation(station) {
   card.classList.remove("hidden");
-  
+
   stationNameEl.textContent = station.stationName;
   aqiValueEl.textContent = station.aqi;
   aqiCategoryEl.textContent = station.category;
-  
-  // FIX: Round PM2.5 to 2 decimal places to prevent long text overflow
+
   pm25El.textContent = station.pm25 ? Number(station.pm25).toFixed(2) : "N/A";
-  
+
   healthEnEl.textContent = station.healthAdviceEn;
   healthNeEl.textContent = station.healthAdviceNe;
-  lastUpdatedEl.textContent = station.lastUpdated ? new Date(station.lastUpdated).toLocaleString() : "Unknown Date";
+  lastUpdatedEl.textContent = station.lastUpdated
+    ? new Date(station.lastUpdated).toLocaleString()
+    : "Unknown Date";
 
   const color = getAqiColor(station.aqi);
   card.style.background = color;
@@ -106,47 +163,44 @@ function showStation(station, allStations) {
   loadHistory(station.stationName);
 }
 
+/* ---------------- HISTORY ---------------- */
 async function loadHistory(stationName) {
   historySection.classList.remove("hidden");
   historyList.innerHTML = "<li>Loading…</li>";
 
   try {
-    const res = await fetch(`${BASE}/kathmandu/history?station=${encodeURIComponent(stationName)}`);
+    const targetUrl = encodeURIComponent(`https://kathmandu-aqi-production-ec2c.up.railway.app/api/aqi/kathmandu/history?station=${stationName}`);
+    const proxyUrl = `https://corsproxy.io/?${targetUrl}`;
+
+    const res = await fetch(proxyUrl);
     if (!res.ok) throw new Error("Failed to load history");
     const data = await res.json();
 
     historyList.innerHTML = "";
     if (data.length === 0) {
-       historyList.innerHTML = "<li>No history available</li>";
-       return;
+      historyList.innerHTML = "<li>No history available</li>";
+      return;
     }
 
     data.forEach(h => {
       const li = document.createElement("li");
-      
-      // FIX: Check multiple possible names your backend might use for the date
       const dateValue = h.timestamp || h.lastUpdated || h.createdAt || h.date;
-      
-      // FIX: Verify it's a real date before turning it into a string, fallback to "Unknown Date"
-      const isValidDate = dateValue && !isNaN(new Date(dateValue).getTime());
-      const formattedDate = isValidDate ? new Date(dateValue).toLocaleString() : "Unknown Date";
+      const formattedDate = dateValue && !isNaN(new Date(dateValue))
+        ? new Date(dateValue).toLocaleString()
+        : "Unknown Date";
 
       li.textContent = `${formattedDate} → AQI ${h.aqi}`;
       historyList.appendChild(li);
     });
-  } catch (error) {
+
+  } catch {
     historyList.innerHTML = "<li>Failed to load history</li>";
   }
 }
 
-stationSelect.addEventListener("change", async () => {
-  try {
-    const res = await fetch(`${BASE}/kathmandu`);
-    const data = await res.json();
-    showStation(data[stationSelect.value], data);
-  } catch(err) {
-    console.error("Error changing station:", err);
-  }
+/* ---------------- MANUAL SELECT ---------------- */
+stationSelect.addEventListener("change", () => {
+  showStation(stationsData[stationSelect.value]);
 });
 
 loadStations();
