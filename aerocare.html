@@ -4,29 +4,30 @@
   <meta charset="UTF-8" />
   <title>Kathmandu AQI Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" href="css/aerocare.css" />
 </head>
+
 <body>
   <div class="app">
-    <header>
+
+    <header class="header">
       <nav class="navbar">
         <div class="logo">AeroCare</div>
-        <div class="nav-links" id="navLinks">
-          <!-- JS will inject buttons here -->
-        </div>
+        <div class="nav-links" id="navLinks"></div>
       </nav>
-      <h1>Kathmandu Air Quality</h1>
-      <p>Live AQI & Health Advisory</p>
+
+      <div class="hero">
+        <h1>Kathmandu Air Quality</h1>
+        <p>Live AQI & Health Advisory</p>
+      </div>
     </header>
 
-    <!-- Station Selector -->
     <section class="controls">
       <select id="stationSelect">
         <option>Loading stations…</option>
       </select>
     </section>
 
-    <!-- AQI Card -->
     <section id="aqiCard" class="aqi-card hidden">
       <h2 id="stationName"></h2>
 
@@ -48,16 +49,17 @@
       </div>
     </section>
 
-    <!-- History -->
     <section id="history" class="history hidden">
       <h3>Last 48 Readings</h3>
       <ul id="historyList" class="list"></ul>
     </section>
 
-    <footer>
+    <footer class="footer">
       Data refreshes every 30 minutes
     </footer>
+
   </div>
+
   <script src="js/aerocare.js"></script>
 </body>
 </html>
