@@ -21,7 +21,7 @@ async function login() {
     const data = await res.json();
     localStorage.setItem("user", JSON.stringify(data));
 
-    if (data.role === "ADMIN") {
+    if (data.role === "ADMIN" || (data.user && data.user.role === "ADMIN")) {
       window.location.href = "admin.html";
     } else {
       window.location.href = "dashboard.html";
@@ -51,8 +51,7 @@ async function register() {
     if (!res.ok) throw new Error("Registration failed.");
 
     alert("Registered successfully. Please login.");
-    
-    // Clear registration form
+
     document.getElementById("regName").value = "";
     document.getElementById("regEmail").value = "";
     document.getElementById("regPassword").value = "";
