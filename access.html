@@ -4,34 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AeroCare Auth</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
 </head>
+
 <body>
-  <div class="app">
-    <header>
-      <h1>AeroCare Auth</h1>
-      <p>Login or create an account</p>
-    </header>
 
-    <div class="form-section">
-      <h2>Login</h2>
-      <input id="loginEmail" type="email" placeholder="Email">
-      <input id="loginPassword" type="password" placeholder="Password">
-      <button onclick="login()">Login</button>
-    </div>
+<div class="particles"></div>
 
-    <div class="form-section">
-      <h2>Register</h2>
-      <input id="regName" type="text" placeholder="Name">
-      <input id="regEmail" type="email" placeholder="Email">
-      <input id="regPassword" type="password" placeholder="Password">
-      <button onclick="register()">Register</button>
-    </div>
+<div class="app auth-app">
 
-    <footer>
-      <a href="aerocare.html">Back to Dashboard</a>
-    </footer>
+  <header>
+    <h1 class="logo">AeroCare</h1>
+    <p>Login or create an account</p>
+  </header>
+
+  <div class="toggle">
+    <button class="active" onclick="showLogin(this)">Login</button>
+    <button onclick="showRegister(this)">Register</button>
   </div>
-  <script src="js/auth.js"></script>
+
+  <!-- LOGIN -->
+  <div id="loginForm" class="form-section">
+    <input id="loginEmail" type="email" placeholder="Email">
+    <input id="loginPassword" type="password" placeholder="Password">
+    <button id="loginBtn" onclick="login()">Login</button>
+  </div>
+
+  <!-- REGISTER -->
+  <div id="registerForm" class="form-section hidden">
+    <input id="regName" placeholder="Name">
+    <input id="regEmail" type="email" placeholder="Email">
+    <input id="regPassword" type="password" placeholder="Password">
+    <button id="regBtn" onclick="register()">Register</button>
+  </div>
+
+  <footer>
+    <a href="aerocare.html" class="nav-link">Back to Home</a>
+  </footer>
+
+</div>
+
+<script src="js/auth.js"></script>
 </body>
 </html>
