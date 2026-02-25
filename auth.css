@@ -1,0 +1,136 @@
+/* ===== RESET ===== */
+*{
+  box-sizing:border-box;
+  margin:0;
+  font-family:"Segoe UI",system-ui,sans-serif;
+}
+
+/* ===== BACKGROUND ===== */
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#fff;
+  padding:20px;
+}
+
+/* PARTICLE BG */
+.particles{
+  position:fixed;
+  inset:0;
+  background-image:radial-gradient(rgba(255,255,255,.15) 1px,transparent 1px);
+  background-size:40px 40px;
+  animation:move 20s linear infinite;
+  z-index:-1;
+}
+
+/* ===== APP ===== */
+.app{
+  width:min(92%,420px);
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(16px);
+  border-radius:22px;
+  padding:30px;
+  box-shadow:0 10px 35px rgba(0,0,0,.35);
+  animation:pop .6s ease;
+}
+
+/* ===== LOGO ===== */
+.logo{
+  font-size:1.8rem;
+  font-weight:800;
+  text-align:center;
+  background:linear-gradient(90deg,#a8ff78,#78ffd6);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* ===== TOGGLE ===== */
+.toggle{
+  display:flex;
+  margin:20px 0;
+  background:rgba(255,255,255,.1);
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.toggle button{
+  flex:1;
+  border:none;
+  padding:12px;
+  cursor:pointer;
+  background:transparent;
+  color:#fff;
+}
+
+.toggle .active{
+  background:linear-gradient(90deg,#00f2fe,#4facfe);
+}
+
+/* ===== FORM ===== */
+.form-section{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:10px;
+}
+
+input{
+  padding:14px;
+  border-radius:10px;
+  border:none;
+  background:rgba(255,255,255,.12);
+  color:#fff;
+}
+
+/* ===== BUTTON ===== */
+button{
+  padding:14px;
+  border-radius:10px;
+  border:none;
+  background:linear-gradient(90deg,#00f2fe,#4facfe);
+  color:#fff;
+  cursor:pointer;
+  font-weight:600;
+  transition:.25s;
+}
+
+button:hover{
+  transform:translateY(-2px);
+}
+
+/* LOADING BUTTON */
+.loading{
+  opacity:.6;
+  pointer-events:none;
+}
+
+/* ===== FOOTER ===== */
+footer{
+  margin-top:20px;
+  text-align:center;
+}
+
+.nav-link{
+  color:#78ffd6;
+  text-decoration:none;
+}
+
+/* ===== UTIL ===== */
+.hidden{
+  display:none;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes pop{
+  from{opacity:0;transform:scale(.9)}
+  to{opacity:1;transform:scale(1)}
+}
+
+@keyframes move{
+  from{background-position:0 0}
+  to{background-position:400px 400px}
+}
