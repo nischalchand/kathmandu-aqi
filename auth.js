@@ -1,13 +1,11 @@
 const BASE_URL = "https://kathmandu-aqi-production-ec2c.up.railway.app";
 
+/* ================= LOGIN ================= */
 async function login() {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
 
-  if (!email || !password) {
-    alert("Please enter both email and password.");
-    return;
-  }
+  if (!email || !password) return alert("Enter email & password");
 
   try {
     const res = await fetch(`${BASE_URL}/api/users/login`, {
@@ -16,30 +14,28 @@ async function login() {
       body: JSON.stringify({ email, password })
     });
 
-    if (!res.ok) throw new Error("Login failed. Check your credentials.");
+    if (!res.ok) throw new Error();
 
     const data = await res.json();
+
+    if (!data) throw new Error();
+
     localStorage.setItem("user", JSON.stringify(data));
 
-    if (data.role === "ADMIN" || (data.user && data.user.role === "ADMIN")) {
-      window.location.href = "admin.html";
-    } else {
-      window.location.href = "dashboard.html";
-    }
-  } catch (error) {
-    alert(error.message || "Failed to connect to the server.");
+    const role = data.role || (data.user && data.user.role);
+    window.location.href = role === "ADMIN" ? "admin.html" : "dashboard.html";
+  } catch {
+    alert("Login failed");
   }
 }
 
+/* ================= REGISTER ================= */
 async function register() {
-  const name = document.getElementById("regName").value;
-  const email = document.getElementById("regEmail").value;
-  const password = document.getElementById("regPassword").value;
+  const name = document.getElementById("regName").value.trim();
+  const email = document.getElementById("regEmail").value.trim();
+  const password = document.getElementById("regPassword").value.trim();
 
-  if (!name || !email || !password) {
-    alert("Please fill in all fields to register.");
-    return;
-  }
+  if (!name || !email || !password) return alert("Fill all fields");
 
   try {
     const res = await fetch(`${BASE_URL}/api/users/register`, {
@@ -48,14 +44,14 @@ async function register() {
       body: JSON.stringify({ name, email, password })
     });
 
-    if (!res.ok) throw new Error("Registration failed.");
+    if (!res.ok) throw new Error();
 
-    alert("Registered successfully. Please login.");
+    alert("Registered — login now");
 
-    document.getElementById("regName").value = "";
-    document.getElementById("regEmail").value = "";
-    document.getElementById("regPassword").value = "";
-  } catch (error) {
-    alert(error.message || "Failed to connect to the server.");
+    regName.value = "";
+    regEmail.value = "";
+    regPassword.value = "";
+  } catch {
+    alert("Register failed");
   }
 }
