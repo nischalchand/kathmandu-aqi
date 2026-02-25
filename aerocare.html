@@ -1,65 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Kathmandu AQI Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/aerocare.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AeroCare AQI Dashboard</title>
+<link rel="stylesheet" href="css/aerocare.css"/>
 </head>
 
 <body>
-  <div class="app">
 
-    <header class="header">
-      <nav class="navbar">
-        <div class="logo">AeroCare</div>
-        <div class="nav-links" id="navLinks"></div>
-      </nav>
+<div class="particles"></div>
 
-      <div class="hero">
-        <h1>Kathmandu Air Quality</h1>
-        <p>Live AQI & Health Advisory</p>
-      </div>
-    </header>
+<div class="app">
 
-    <section class="controls">
-      <select id="stationSelect">
-        <option>Loading stations…</option>
-      </select>
-    </section>
+<header class="navbar">
+  <div class="logo">AeroCare</div>
+  <div class="nav-links" id="navLinks"></div>
+</header>
 
-    <section id="aqiCard" class="aqi-card hidden">
-      <h2 id="stationName"></h2>
+<section class="hero">
+  <h1>Kathmandu Air Quality</h1>
+  <p>Live AQI & Health Advisory</p>
+</section>
 
-      <div class="aqi-value" id="aqiValue"></div>
-      <div class="aqi-category" id="aqiCategory"></div>
+<section class="controls">
+  <select id="stationSelect">
+    <option>Loading stations…</option>
+  </select>
+</section>
 
-      <div class="pm">
-        PM2.5: <span id="pm25"></span> µg/m³
-      </div>
+<section id="aqiCard" class="aqi-card hidden">
+  <h2 id="stationName"></h2>
 
-      <div class="health">
-        <h3>Health Advice</h3>
-        <p id="healthEn"></p>
-        <p class="ne" id="healthNe"></p>
-      </div>
+  <div class="aqi-value" id="aqiValue">--</div>
+  <div class="aqi-category" id="aqiCategory"></div>
 
-      <div class="updated">
-        Last updated: <span id="lastUpdated"></span>
-      </div>
-    </section>
+  <div class="pm">PM2.5: <span id="pm25"></span> µg/m³</div>
 
-    <section id="history" class="history hidden">
-      <h3>Last 48 Readings</h3>
-      <ul id="historyList" class="list"></ul>
-    </section>
-
-    <footer class="footer">
-      Data refreshes every 30 minutes
-    </footer>
-
+  <div class="health">
+    <h3>Health Advice</h3>
+    <p id="healthEn"></p>
+    <p class="ne" id="healthNe"></p>
   </div>
 
-  <script src="js/aerocare.js"></script>
+  <div class="updated">
+    Last updated: <span id="lastUpdated"></span>
+  </div>
+</section>
+
+<section id="history" class="history hidden">
+  <h3>Last 48 Readings</h3>
+  <ul id="historyList" class="list"></ul>
+</section>
+
+</div>
+
+<script src="js/aerocare.js"></script>
 </body>
 </html>
