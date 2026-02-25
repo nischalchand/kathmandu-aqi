@@ -1,0 +1,213 @@
+/* =========================
+   GLOBAL
+========================= */
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+/* floating pollution particles */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.15) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: move 20s linear infinite;
+  z-index: -1;
+}
+
+/* =========================
+   APP CONTAINER
+========================= */
+.app {
+  width: min(95%, 950px);
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(14px);
+  border-radius: 22px;
+  padding: 30px;
+  margin: auto;
+  box-shadow:
+    0 12px 40px rgba(0,0,0,.4),
+    inset 0 0 0 1px rgba(255,255,255,.08);
+  animation: fadeIn .6s ease;
+}
+
+/* =========================
+   HEADER
+========================= */
+header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 2.5vw, 2.3rem);
+  background: linear-gradient(90deg,#a8ff78,#78ffd6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* =========================
+   NAVBAR LINKS
+========================= */
+.nav-links {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.nav-link,
+button {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: .3s;
+}
+
+.nav-link:hover,
+button:hover {
+  background: rgba(255,255,255,.3);
+  transform: translateY(-2px);
+}
+
+/* =========================
+   FORM SECTIONS (CARDS)
+========================= */
+.form-section {
+  background: rgba(0,0,0,.25);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  transition: .35s;
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 4px 15px rgba(0,0,0,.25),
+    inset 0 0 0 1px rgba(255,255,255,.05);
+}
+
+.form-section:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+.form-section h2 {
+  margin-top: 0;
+  font-size: 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  padding-bottom: 8px;
+}
+
+/* =========================
+   INPUTS
+========================= */
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.1);
+  color: #fff;
+  outline: none;
+  transition: .25s;
+}
+
+input::placeholder {
+  color: rgba(255,255,255,.6);
+}
+
+input:focus {
+  border-color: #78ffd6;
+  background: rgba(255,255,255,.18);
+  box-shadow: 0 0 10px rgba(120,255,214,.4);
+}
+
+/* =========================
+   AQI LIST CARDS
+========================= */
+.aqi-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aqi-item {
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.12);
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0,0,0,.2);
+  animation: slideUp .5s ease;
+}
+
+/* =========================
+   HISTORY LIST
+========================= */
+.list {
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  border-radius: 12px;
+  background: rgba(0,0,0,.18);
+}
+
+.list li {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.list li:last-child {
+  border-bottom: none;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.25);
+  border-radius: 10px;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes fadeIn {
+  from {opacity:0; transform:scale(.96);}
+  to {opacity:1; transform:scale(1);}
+}
+
+@keyframes slideUp {
+  from {opacity:0; transform:translateY(15px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+@keyframes move {
+  from {background-position:0 0;}
+  to {background-position:400px 400px;}
+}
